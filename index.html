@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b4f7a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Crew Register</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#152233;--muted:#64748b;--line:#dce4ee;--brand:#0b4f7a;--good:#15803d;--warn:#b45309;--bad:#b91c1c;--shadow:0 8px 30px rgba(15,35,55,.08)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1200px;margin:auto;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:10px;font-weight:800}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#0b4f7a,#14b8a6);display:grid;place-items:center;color:#fff;font-size:20px}.nav small{color:var(--muted)}
+.wrap{max-width:1200px;margin:auto;padding:20px 16px 50px}.hero{display:flex;justify-content:space-between;gap:15px;align-items:flex-end;margin-bottom:18px}.hero h1{margin:0 0 5px;font-size:clamp(25px,5vw,38px)}.hero p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat,.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.stat{padding:15px}.stat b{display:block;font-size:25px;margin-top:3px}.label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.card{padding:18px;margin-bottom:16px}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}.step{padding:10px;border-radius:12px;background:#eef3f8;color:#607084;font-weight:700;font-size:13px;text-align:center}.step.active{background:#dceefa;color:var(--brand)}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-weight:700;font-size:13px}.field input,.field select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);outline:none}.field input:focus,.field select:focus{border-color:#5ba4cf;box-shadow:0 0 0 3px #dceefa}
+.btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.btn{padding:10px 14px;border-radius:10px;font-weight:750;background:#edf2f7;color:var(--text)}.btn.primary{background:var(--brand);color:#fff}.btn.success{background:#15803d;color:#fff}.btn.warn{background:#b45309;color:#fff}.btn.danger{background:#b91c1c;color:#fff}.btn.ghost{background:transparent;border:1px solid var(--line)}
+.batchbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.pill{padding:9px 13px;border-radius:999px;background:#edf2f7;font-weight:750}.pill.active{background:var(--brand);color:#fff}.pill.done{background:#dcfce7;color:#166534}
+.train{border:1px solid var(--line);border-radius:14px;margin:10px 0;overflow:hidden;background:#fff}.trainhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#f8fafc}.trainbody{padding:12px 14px}.crewline{display:grid;grid-template-columns:1fr 1.5fr 1.5fr auto;gap:8px;align-items:center;margin:8px 0}.crewline input{padding:9px;border:1px solid var(--line);border-radius:9px;width:100%}.person{font-weight:750}.phone{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.unknown{color:var(--warn);font-size:12px}.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}.status{padding:9px 11px;border-radius:10px;background:#f1f5f9;color:#475569;font-size:13px}.status.good{background:#ecfdf5;color:#166534}.status.warn{background:#fff7ed;color:#9a3412}
+.review-item{padding:11px;border-bottom:1px solid var(--line)}.toast{position:fixed;right:16px;bottom:18px;z-index:100;background:#152233;color:#fff;padding:11px 14px;border-radius:10px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}
+.modal{position:fixed;inset:0;background:rgba(2,12,22,.55);display:none;align-items:center;justify-content:center;padding:15px;z-index:50}.modal.show{display:flex}.modalbox{background:#fff;border-radius:16px;max-width:760px;width:100%;padding:20px;max-height:92vh;overflow:auto}.modalbox h3{margin-top:0}.mini{font-size:12px;color:var(--muted)}
+.adminNav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}.adminTab{padding:9px 12px;border-radius:9px;background:#eef2f7;font-weight:750}.adminTab.active{background:var(--brand);color:white}.tableWrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}.table th{background:#f8fafc}.filebox{border:2px dashed #b9c9d8;border-radius:13px;padding:18px;text-align:center;background:#f8fbfd}.hint{padding:12px;background:#f8fafc;border-radius:10px;font-size:13px;color:#475569}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1fr}.crewline{grid-template-columns:1fr 1.2fr auto}.phone{display:none}}
+@media(max-width:520px){.wrap{padding:14px 10px 40px}.nav{padding:10px}.grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.trainhead{align-items:flex-start}.crewline{grid-template-columns:1fr 1fr}.crewline .remove{grid-column:1/-1}.hero{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="top"><div class="nav">
+<div class="brand"><div class="logo">✓</div><div>Crew Register<br><small>KOAA / SDAH</small></div></div>
+<div class="btns" style="margin:0"><button class="btn ghost" onclick="openAdmin()">Admin</button><button class="btn ghost" onclick="resetApp()">Reset local data</button></div>
+</div></header>
+
+<main class="wrap">
+<section class="hero"><div><h1>Daily Crew Register</h1><p>Admin-managed crew master. No need to upload employee data to ChatGPT each time.</p></div></section>
+<div class="grid">
+<div class="stat"><span class="label">Yard</span><b id="statYard">—</b></div><div class="stat"><span class="label">Batch</span><b id="statBatch">—</b></div><div class="stat"><span class="label">Entered Trains</span><b id="statTrains">0</b></div><div class="stat"><span class="label">Crew IDs</span><b id="statIds">0</b></div>
+</div>
+<div class="steps"><div class="step active">1. Date & Yard</div><div class="step">2. Batch</div><div class="step">3. Crew Entry</div><div class="step">4. Review</div></div>
+
+<section class="card"><div class="row">
+<div class="field"><label>Date</label><input type="date" id="entryDate"></div>
+<div class="field"><label>Yard</label><select id="yard" onchange="yardChanged()"><option>KOAA</option><option>SDAH</option></select></div>
+</div><div id="yardNote" class="status warn" style="margin-top:12px"></div></section>
+
+<section class="card"><div class="label">Batch</div><div class="batchbar" id="batchBar"></div><div id="batchStatus" class="status"></div></section>
+
+<section class="card">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><div class="label">Train & Crew Entry</div><h2 id="formTitle" style="margin:4px 0 0">Select a batch</h2></div><button class="btn primary" onclick="addSpecial()">+ Special Train</button></div>
+<div id="trainList" style="margin-top:12px"></div>
+<div class="btns"><button class="btn success" onclick="saveDraft()">Save Draft</button><button class="btn primary" onclick="showReview()">Review & Finish</button></div>
+</section>
+
+<section class="card" id="reviewCard" style="display:none"><div class="label">Review & Submission</div><h2 style="margin:4px 0 10px">Ready to copy</h2><div id="review"></div><div class="btns"><button class="btn ghost" onclick="$('reviewCard').style.display='none'">Edit</button><button class="btn primary" onclick="copySelected()">Copy Selected Groups</button><button class="btn success" onclick="copyAll()">Copy All</button><button class="btn" onclick="downloadCSV()">Download CSV</button></div></section>
+</main>
+
+<div class="modal" id="modal"><div class="modalbox" id="modalBox"></div></div><div class="toast" id="toast"></div>
+
+<script>
+/* TEMPORARY PROTOTYPE ADMIN SETTINGS
+   IMPORTANT: Frontend passwords are NOT secure. When cloud storage/auth is added,
+   these credentials will move to real server-side authentication. */
+const ADMIN_EMAIL="rahulbiswas203334@gmail.com";
+const ADMIN_PASSWORD="CHANGE_THIS_TEMPORARY_PASSWORD";
+
+const KOAA={A:[["13113",1],["13161",2],["13159",2],["13157",2],["12317",2],["12315",2],["13155",2],["13165",2],["13151",1]],B:[["13181",2],["13145",2],["12363",1],["13125",1],["12357",2],["13167",1],["13135",3],["13151",1]],C:[["13137",2],["13127",4],["12319",2],["12325",2],["12357",2],["13121",2],["22323",2],["13117",2],["13151",1]]};
+let SDAH={A:[],B:[],C:[]};
+let state={yard:"KOAA",batch:"A",data:{},employees:{KOAA:{},SDAH:{}}};
+const $=id=>document.getElementById(id), entryDate=$("entryDate"), yard=$("yard");
+function today(){return new Date().toISOString().slice(0,10)}
+function norm(v){return String(v||"").trim().replace(/^0+(?=\d)/,"")}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function dataKey(){return `crew_register_v2_${entryDate.value}_${yard.value}`}
+function init(){entryDate.value=today();loadState();render()}
+function loadState(){state.yard=yard.value;state.data=JSON.parse(localStorage.getItem(dataKey())||'{"batches":{"A":{},"B":{},"C":{}}}');state.employees=JSON.parse(localStorage.getItem("crew_employees_v2")||'{"KOAA":{},"SDAH":{}}');SDAH=JSON.parse(localStorage.getItem("crew_trains_SDAH")||'{"A":[],"B":[],"C":[]}')}
+function persist(){localStorage.setItem(dataKey(),JSON.stringify(state.data));localStorage.setItem("crew_employees_v2",JSON.stringify(state.employees))}
+function toast(t){let e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1000)}
+function currentTrains(b=state.batch){return state.yard==="KOAA"?KOAA[b]:SDAH[b]}
+function yardChanged(){loadState();state.batch="A";render()}
+entryDate.addEventListener("change",()=>{loadState();render()});
+function render(){
+$("statYard").textContent=state.yard;$("statBatch").textContent="BATCH "+state.batch;
+let d=state.data.batches?.[state.batch]||{};$("statTrains").textContent=Object.values(d).filter(x=>x.crew?.some(c=>c.id)).length;$("statIds").textContent=Object.values(d).reduce((n,x)=>n+(x.crew||[]).filter(c=>c.id).length,0);
+$("yardNote").textContent=state.yard==="KOAA"?"KOAA A/B/C loaded. 13151 is common to all three batches.":"SDAH train list can be loaded by Admin → Train Lists.";
+$("yardNote").className="status "+(state.yard==="KOAA"?"good":"warn");renderBatches();renderTrains()
+}
+function renderBatches(){$("batchBar").innerHTML=["A","B","C"].map(b=>{let done=Object.values(state.data.batches?.[b]||{}).some(x=>(x.crew||[]).some(c=>c.id));return `<button class="pill ${state.batch===b?"active ":""}${done?"done":""}" onclick="selectBatch('${b}')">BATCH ${b}${done?" ✓":""}</button>`}).join("");$("batchStatus").textContent=`${state.yard} — Batch ${state.batch}. Complete groups in order A → B → C.`}
+function selectBatch(b){state.batch=b;render();window.scrollTo({top:250,behavior:"smooth"})}
+function ensureBatch(){if(!state.data.batches)state.data.batches={A:{},B:{},C:{}};if(!state.data.batches[state.batch])state.data.batches[state.batch]={};return state.data.batches[state.batch]}
+function findEmployee(id){return state.employees[state.yard]?.[norm(id)]||null}
+function renderTrains(){
+$("formTitle").textContent=state.yard+" BATCH "+state.batch;let list=currentTrains();
+if(!list.length){$("trainList").innerHTML=`<div class="empty"><b>No ${state.yard} Batch ${state.batch} train list loaded.</b><br><span class="mini">Admin can upload the SDAH Excel workbook from the Admin Panel.</span></div>`;return}
+let batch=state.data.batches[state.batch]||{};$("trainList").innerHTML=list.map(([train,count])=>{let rec=batch[train]||{crew:Array.from({length:count},()=>({id:""}))};while((rec.crew||[]).length<count)rec.crew.push({id:""});return `<div class="train"><div class="trainhead"><strong>Train ${esc(train)}</strong><span class="status">${train==="13151"?"COMMON A/B/C":count+" ID slot"+(count>1?"s":"")}</span></div><div class="trainbody">${rec.crew.map((c,i)=>crewHTML(train,i,c)).join("")}<div class="btns"><button class="btn" onclick="addCrew('${esc(train)}')">+ Add ID</button><button class="btn ghost" onclick="clearTrain('${esc(train)}')">Clear</button></div></div></div>`}).join("")
+}
+function crewHTML(train,i,c){let e=findEmployee(c.id),name=e?e.name:(c.id?`ID ${norm(c.id)} not registered in ${state.yard}`:""),phone=e?e.phones.join(" / "):"";return `<div class="crewline"><input inputmode="numeric" placeholder="Crew ID" value="${esc(c.id||"")}" oninput="setCrew('${esc(train)}',${i},this.value)"><div class="person">${esc(name)}</div><div class="phone">${esc(phone)}</div><button class="btn remove" onclick="removeCrew('${esc(train)}',${i})">Remove</button></div>${c.id&&!e?`<div class="unknown">⚠ Not registered for ${state.yard}. <button class="btn warn" onclick="quickAdd('${esc(norm(c.id))}')">Register ${esc(norm(c.id))}</button></div>`:""}`}
+function setCrew(train,i,v){let b=ensureBatch();if(!b[train])b[train]={crew:[]};while(b[train].crew.length<=i)b[train].crew.push({id:""});b[train].crew[i].id=norm(v);persist();render()}
+function addCrew(train){let b=ensureBatch();if(!b[train])b[train]={crew:[]};b[train].crew.push({id:""});persist();render()}
+function removeCrew(train,i){let b=ensureBatch();if(b[train]?.crew?.length>1)b[train].crew.splice(i,1);else if(b[train])b[train].crew[0]={id:""};persist();render()}
+function clearTrain(train){delete ensureBatch()[train];persist();render()}
+function saveDraft(){persist();toast("Draft saved")}
+function addSpecial(){let train=prompt("Enter special train number:");if(!train)return;ensureBatch()[train.trim()]={crew:[{id:""}],special:true};persist();render();toast("Special train added")}
+function quickAdd(id){openModal(`<h3>Register employee for ${state.yard}</h3><div class="field"><label>ID Card No</label><input id="qaid" value="${esc(id)}"></div><div class="field" style="margin-top:9px"><label>Full Name</label><input id="qaname"></div><div class="field" style="margin-top:9px"><label>Phone 1</label><input id="qap1"></div><div class="field" style="margin-top:9px"><label>Phone 2</label><input id="qap2"></div><div class="field" style="margin-top:9px"><label>Phone 3</label><input id="qap3"></div><div class="btns"><button class="btn primary" onclick="saveQuick()">Save</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function saveQuick(){let id=norm($("qaid").value),name=$("qaname").value.trim();if(!id||!name)return toast("ID and name required");state.employees[state.yard][id]={id,name,phones:[$("qap1").value.trim(),$("qap2").value.trim(),$("qap3").value.trim()].filter(Boolean),createdAt:new Date().toISOString()};persist();closeModal();render();toast("Employee saved")}
+function openModal(html){$("modalBox").innerHTML=html;$("modal").classList.add("show")}function closeModal(){$("modal").classList.remove("show")}
+
+function groupText(batch){let b=state.data.batches?.[batch]||{},lines=[],seen=new Set();for(let [train] of currentTrains(batch)){let r=b[train];if(!r?.crew?.some(c=>c.id))continue;seen.add(train);r.crew.filter(c=>c.id).forEach(c=>{let e=findEmployee(c.id);lines.push(`${train} - ${e?e.name:"ID "+norm(c.id)} - ${e?.phones?.join(" / ")||"PHONE NOT REGISTERED"} - BATCH ${batch} ${state.yard}`)})}Object.entries(b).forEach(([train,r])=>{if(!seen.has(train)&&r.special&&r.crew?.some(c=>c.id))r.crew.filter(c=>c.id).forEach(c=>{let e=findEmployee(c.id);lines.push(`${train} - ${e?e.name:"ID "+norm(c.id)} - ${e?.phones?.join(" / ")||"PHONE NOT REGISTERED"} - BATCH ${batch} ${state.yard}`)})});return lines.length?`${state.yard}\nBATCH ${batch}\n\n${lines.map((x,i)=>`${i+1}. ${x}`).join("\n")}`:""}
+function showReview(){persist();let blocks=["A","B","C"].map(groupText).filter(Boolean);$("review").innerHTML=blocks.length?blocks.map(x=>`<pre style="white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:10px;overflow:auto">${esc(x)}</pre>`).join(""):"<div class='empty'>No crew IDs entered yet.</div>";$("reviewCard").style.display="block";window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}
+function copyText(txt){navigator.clipboard?.writeText(txt).then(()=>toast("Copied")).catch(()=>{let t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();toast("Copied")})}
+function copySelected(){let selected=["A","B","C"].filter(b=>confirm(`Copy BATCH ${b}?`));let txt=selected.map(groupText).filter(Boolean).join("\n\n");txt?copyText(txt):toast("Nothing selected")}
+function copyAll(){let txt=["A","B","C"].map(groupText).filter(Boolean).join("\n\n");txt?copyText(txt):toast("Nothing entered")}
+function downloadCSV(){let rows=[["Date","Yard","Batch","Train","Crew ID","Name","Phone 1","Phone 2","Phone 3"]];["A","B","C"].forEach(batch=>Object.entries(state.data.batches?.[batch]||{}).forEach(([train,r])=>(r.crew||[]).forEach(c=>{if(!c.id)return;let e=findEmployee(c.id)||{};rows.push([entryDate.value,state.yard,batch,train,c.id,e.name||"",...(e.phones||[]),""].slice(0,9))})));let csv=rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=`Crew_${state.yard}_${entryDate.value}.csv`;a.click();toast("CSV downloaded")}
+
+function openAdmin(){openModal(`<h2>Admin Panel</h2><div class="hint">Admin changes in this version are saved to this browser. Later, when cloud storage/auth is connected, the same panel will manage shared data for every phone.</div><div class="field" style="margin-top:14px"><label>Admin Email</label><input id="adminEmail" type="email"></div><div class="field" style="margin-top:9px"><label>Password</label><input id="adminPass" type="password"></div><div class="btns"><button class="btn primary" onclick="adminLogin()">Open Admin</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function adminLogin(){if($("adminEmail").value.trim().toLowerCase()!==ADMIN_EMAIL.toLowerCase()||$("adminPass").value!==ADMIN_PASSWORD)return toast("Invalid admin login");closeModal();adminPanel()}
+function adminPanel(){openModal(`<h2>Admin Panel</h2><div class="adminNav"><button class="adminTab active" onclick="adminEmployees()">Employees</button><button class="adminTab" onclick="adminTrains()">Train Lists</button><button class="adminTab" onclick="adminTools()">Tools</button></div><div id="adminContent"></div>`);adminEmployees()}
+function adminEmployees(){
+$("adminContent").innerHTML=`<h3>Employee Master</h3><p class="mini">Upload Excel/CSV whenever you have new or changed employee data. You do not need to send the file to ChatGPT.</p>
+<div class="row"><div class="field"><label>Yard</label><select id="empYard"><option>KOAA</option><option>SDAH</option></select></div><div class="field"><label>File</label><input type="file" id="empFile" accept=".xlsx,.xls,.csv"></div></div>
+<div class="hint" style="margin-top:12px"><b>Accepted columns:</b> ID / ID CARD NO, NAME / NAME OF STAFF, PHONE / PHONE 1 / PHONE 2 / PHONE 3. Column names are detected automatically.</div>
+<div class="btns"><button class="btn primary" onclick="importEmployees()">Import / Update Employees</button><button class="btn success" onclick="downloadEmployees()">Download Current Employee Excel</button><button class="btn" onclick="manualEmployee()">+ Add One Employee</button></div><div id="empSummary" style="margin-top:15px"></div>`;showEmployeeTable()}
+function showEmployeeTable(){
+let y=$("empYard")?.value||"KOAA",arr=Object.values(state.employees[y]||{});$("empSummary").innerHTML=`<div class="status good">${arr.length} employees currently registered for ${y}</div><div class="tableWrap" style="margin-top:10px"><table class="table"><thead><tr><th>ID</th><th>Name</th><th>Phones</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr><td>${esc(e.id)}</td><td>${esc(e.name)}</td><td>${esc(e.phones.join(" / "))}</td><td><button class="btn danger" onclick="deleteEmployee('${esc(y)}','${esc(e.id)}')">Delete</button></td></tr>`).join("")}</tbody></table></div>`}
+function manualEmployee(){openModal(`<h3>Add Employee</h3><div class="field"><label>Yard</label><select id="myard"><option>KOAA</option><option>SDAH</option></select></div><div class="field" style="margin-top:8px"><label>ID</label><input id="mid"></div><div class="field" style="margin-top:8px"><label>Name</label><input id="mname"></div><div class="field" style="margin-top:8px"><label>Phone 1</label><input id="mp1"></div><div class="field" style="margin-top:8px"><label>Phone 2</label><input id="mp2"></div><div class="field" style="margin-top:8px"><label>Phone 3</label><input id="mp3"></div><div class="btns"><button class="btn primary" onclick="saveManual()">Save</button><button class="btn ghost" onclick="closeModal();adminPanel()">Cancel</button></div>`)}
+function saveManual(){let y=$("myard").value,id=norm($("mid").value),name=$("mname").value.trim();if(!id||!name)return toast("ID and name required");state.employees[y][id]={id,name,phones:[$("mp1").value.trim(),$("mp2").value.trim(),$("mp3").value.trim()].filter(Boolean),createdAt:new Date().toISOString()};persist();closeModal();adminPanel();toast("Employee added")}
+function deleteEmployee(y,id){if(!confirm(`Delete ${id} from ${y}?`))return;delete state.employees[y][id];persist();adminEmployees();toast("Employee deleted")}
+async function importEmployees(){
+let file=$("empFile").files[0],y=$("empYard").value;if(!file)return toast("Choose an Excel/CSV file");
+try{let rows=await readFileRows(file),count=0;for(let r of rows){let o=mapEmployeeRow(r);if(!o.id||!o.name)continue;state.employees[y][norm(o.id)]={id:norm(o.id),name:o.name,phones:o.phones,createdAt:new Date().toISOString()};count++}persist();showEmployeeTable();toast(`${count} employees imported`)}catch(e){alert("Could not read file: "+e.message)}}
+function cleanHeader(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+function mapEmployeeRow(r){let keys=Object.keys(r),find=(tests)=>{let k=keys.find(x=>tests.some(t=>cleanHeader(x).includes(t)));return k?r[k]:""};let id=find(["idcard","idno","employeeid","staffid","id"]),name=find(["nameofstaff","fullname","employeename","staffname","name"]),phones=[];["phone1","mobile1","phone","mobile","phonenumber"].forEach(t=>{let k=keys.find(x=>cleanHeader(x)===t);if(k&&r[k]&& !phones.includes(String(r[k])))phones.push(String(r[k]))});["phone2","mobile2"].forEach(t=>{let k=keys.find(x=>cleanHeader(x)===t);if(k&&r[k]&&!phones.includes(String(r[k])))phones.push(String(r[k]))});["phone3","mobile3"].forEach(t=>{let k=keys.find(x=>cleanHeader(x)===t);if(k&&r[k]&&!phones.includes(String(r[k])))phones.push(String(r[k]))});if(!phones.length){let k=keys.find(x=>cleanHeader(x).includes("phone"));if(k&&r[k])phones=String(r[k]).split(/[,;/]+/).map(x=>x.trim()).filter(Boolean).slice(0,3)}return{id:String(id||"").trim(),name:String(name||"").trim(),phones:phones.slice(0,3)}}
+function readFileRows(file){return new Promise((resolve,reject)=>{let fr=new FileReader();fr.onload=e=>{try{let data=new Uint8Array(e.target.result),wb=XLSX.read(data,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{defval:""});resolve(rows)}catch(err){reject(err)}};fr.onerror=reject;fr.readAsArrayBuffer(file)})}
+function downloadEmployees(){let y=$("empYard").value,rows=Object.values(state.employees[y]||{}).map(e=>({ID:e.id,NAME:e.name,"PHONE 1":e.phones[0]||"","PHONE 2":e.phones[1]||"","PHONE 3":e.phones[2]||""})),ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,y);XLSX.writeFile(wb,`${y}_EMPLOYEES.xlsx`)}
+async function adminTrains(){
+$("adminContent").innerHTML=`<h3>Train List Manager</h3><p class="mini">Upload an Excel workbook. For KOAA, the first three sheets can represent Batch A/B/C. For SDAH, the same structure is supported.</p><div class="row"><div class="field"><label>Yard</label><select id="trainYard"><option>KOAA</option><option>SDAH</option></select></div><div class="field"><label>Excel workbook</label><input type="file" id="trainFile" accept=".xlsx,.xls"></div></div><div class="hint" style="margin-top:12px">The importer looks for a TRAIN column or train numbers in each sheet, and detects the number of ID slots from the numeric values beside the train. Existing KOAA data remains the built-in starting list; uploaded data can replace the selected yard's list.</div><div class="btns"><button class="btn primary" onclick="importTrains()">Import Train Workbook</button><button class="btn danger" onclick="clearTrains()">Clear Uploaded SDAH Lists</button></div><div id="trainSummary" style="margin-top:14px"></div>`;renderTrainSummary()}
+function renderTrainSummary(){let y=$("trainYard")?.value||"KOAA",d=y==="KOAA"?KOAA:SDAH;$("trainSummary").innerHTML=["A","B","C"].map(b=>`<div class="status ${d[b].length?"good":"warn"}" style="margin:6px 0"><b>${y} Batch ${b}:</b> ${d[b].length?d[b].map(x=>x[0]+" ("+x[1]+" IDs)").join(", "):"not loaded"}</div>`).join("")}
+async function importTrains(){
+let file=$("trainFile").files[0],y=$("trainYard").value;if(!file)return toast("Choose the train workbook");
+try{let data=new Uint8Array(await file.arrayBuffer()),wb=XLSX.read(data,{type:"array"}),out={A:[],B:[],C:[]};wb.SheetNames.slice(0,3).forEach((sn,idx)=>{let ws=wb.Sheets[sn],rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});let found=[];for(let i=0;i<rows.length;i++){let row=rows[i],trainIdx=row.findIndex(v=>String(v).trim().toUpperCase()==="TRAIN");if(trainIdx>=0){for(let j=i+1;j<rows.length;j++){let tr=String(rows[j][trainIdx]||"").trim();if(/^\d{3,6}(\/\d{3,6})?$/.test(tr)){let n=1;for(let k=j+1;k<Math.min(j+8,rows.length);k++){let v=Number(rows[k][trainIdx]);if(Number.isInteger(v)&&v>0&&v<=10)n=Math.max(n,v);if(String(rows[k][trainIdx]).toUpperCase().includes("ENTER ID"))n=Math.max(n,Number(rows[k-1]?.[trainIdx])||1)}found.push([tr,n])} }break}}if(!found.length){for(let r of rows){let tr=String(r[2]||"").trim();let n=Number(r[1]);if(/^\d{3,6}(\/\d{3,6})?$/.test(tr))found.push([tr,Number.isInteger(n)&&n>0?n:1])}}out[["A","B","C"][idx]]=dedupeTrains(found)});if(y==="SDAH"){SDAH=out;localStorage.setItem("crew_trains_SDAH",JSON.stringify(SDAH))}else{KOAA=out}renderTrainSummary();render();toast(`${y} train lists imported`)}catch(e){alert("Train import failed: "+e.message)}}
+function dedupeTrains(a){let m=new Map();a.forEach(x=>m.set(x[0],Math.max(m.get(x[0])||1,x[1])));return [...m].map(x=>x)}
+function clearTrains(){if(confirm("Clear uploaded SDAH train lists?")){SDAH={A:[],B:[],C:[]};localStorage.setItem("crew_trains_SDAH",JSON.stringify(SDAH));renderTrainSummary();render();toast("SDAH lists cleared")}}
+function adminTools(){$("adminContent").innerHTML=`<h3>Admin Tools</h3><div class="hint"><b>Current prototype:</b> employees, uploaded SDAH train lists and daily drafts are stored locally in this browser. The final version will move these to shared cloud storage with real authentication.</div><div class="btns"><button class="btn success" onclick="downloadEmployees()">Export Employees</button><button class="btn danger" onclick="resetApp()">Reset ALL local application data</button></div>`}
+function resetApp(){if(confirm("Delete all Crew Register local data from this browser?")){Object.keys(localStorage).filter(k=>k.startsWith("crew_register_v2_")||k.startsWith("crew_employees_v2")||k==="crew_trains_SDAH").forEach(k=>localStorage.removeItem(k));location.reload()}}
+init();
+</script>
+</body></html>
